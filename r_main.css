@@ -116,12 +116,62 @@ code.mathjax .MathJax_Display {
   margin-right: 0.5em;
 }
 
+/* Intro */
+
+
 /* Home */
 
 .home {
   font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
-  font-weight: 100;
+  font-weight: 130;
+
 }
+
+.home .intro .title {
+  font-family: "HelveticaNeue-Medium", "Helvetica Neue Medium", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+  font-weight: 130;
+
+  margin-bottom: 1.5em;
+  font-size: 1.25em;
+  line-height: 1.25em;
+  text-align: left;
+}
+
+.home .intro .subtitle {
+  font-family: "HelveticaNeue-Medium", "Helvetica Neue Medium", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+  font-weight: 130;
+  padding-top: 0.5em;
+  margin-bottom: 0.5em;
+  font-size: 1.00em;
+  line-height: 1.25em;
+  text-align: left;
+}
+
+.home .intro .heavy {
+  font-family: "HelveticaNeue-Medium", "Helvetica Neue Medium", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+  font-size: 0.75em;
+  margin-bottom: 0.3em;
+}
+
+.home .intro ul.awards {
+  font-family: "HelveticaNeue-Medium", "HelveticaNeue Medium", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+  font-size: 0.65em;
+  list-style-type: square;
+}
+
+.home .intro ul.coursework li {
+  line-height: 0.5em;
+  margin-bottom: 1em;
+  margin-left: 1.5em;
+}
+
+.home .intro .heavyend {
+  font-family: "HelveticaNeue-Medium", "Helvetica Neue Medium", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+  font-size: 0.75em;
+  padding-top: 0.5em;
+  margin-bottom: 0.3em;
+}
+
 
 .home .intro .good {
   color: #0000FF;
@@ -131,12 +181,50 @@ code.mathjax .MathJax_Display {
   color: #a00;
 }
 
+.home .intro .smaller_intro {
+  font-size: 0.75em;
+  line-height: 1.00em;
+  margin-bottom: 0.75em;
+}
+
+.home .intro .smallerer_intro {
+  font-size: 0.65em;
+  line-height: 1.00em;
+  margin-bottom: 0.75em;
+}
+
+.home .intro .internship_details {
+  font-size: 0.65em;
+  line-height: 1.20em;
+  width: 70%;
+  margin-bottom: 0.75em;
+}
+
 .home .intro {
   margin-bottom: 1.5em;
   font-size: 1.25em;
-  line-height: 1.25em;
+  line-height: 0.75em;
   text-align: left;
 }
+
+.home .intro ul.coursework {
+  font-family: "HelveticaNeue-Light", "HelveticaNeue Light", Helvetica, Arial, "Lucida Grande", sans-serif;
+  font-size: 0.65em;
+  list-style-type: square;
+}
+
+.home .intro ul.coursework li {
+  line-height: 0.5em;
+  margin-bottom: 1em;
+  margin-left: 1.5em;
+}
+
+.home .intro ul.coursework span.date {
+  font-family: Consolas, "Liberation Mono", Courier, monospace;
+  font-size: 0.8em;
+}
+
+
 
 .home .intro p {
   margin: 0.5em 0;
@@ -164,6 +252,11 @@ code.mathjax .MathJax_Display {
 .home ul.posts span.date {
   font-family: Consolas, "Liberation Mono", Courier, monospace;
   font-size: 0.8em;
+}
+
+.home ul.posts span.test {
+  font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+  font-weight: 100;
 }
 
 @media only screen and (max-width: 38em) {
