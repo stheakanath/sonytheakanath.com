@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Kuriakose Sony Theakanath - iOS Developer, Researcher, and Entrepeneur</title>
+    <meta name="viewport" content="width=device-width">
+    <link rel="stylesheet" href="r_syntax.css">
+    <link rel="stylesheet" href="r_main.css">
+  </head>
+  <body>
+    <div class="container">
+      <div class="site">
+        <div class="home">
+          <div class="intro">
+		  		  <span class = "title">Enabling Push Notifications for Gmail on iOS</span>
+		  		  <div class = "smaller_intro">A (halfway) solution to bypassing IMAP restrictions on iOS Mail client</div>
+		  		  <hr/>
+            <div class = "subtitle">Overview</div>
+              <div class = "internship_details">As an Apple Engineer I have to use my @apple.com email. Because of this I have to use the Mail app, and one thing I hate more than Facebook's "supposed" Messenger updates is two different apps on the phone at once. Before my internship, I just used the Gmail app and I loved the fact that I got <b>immediate</b> notifications for my email. This is especially important if I want to stay in the loop for a particular email thread; or whether I want to appear punctual to someone. 
+              </br></br>
+              Now that I'm forced to use the Mail app (security reasons), I added my Gmail account to the Mail app, and deleted the Gmail app. This poses one big issue: <b>Google does not support Push Notifications for the native Mail app.</b> Post iOS 6, Google disabled support for Google Sync, which allowed access to mail via the Exchange ActiveSync (EAS) protocol enabling push support. If you are using the Mail app, the only way to get Gmail mail notifications on your iPhone is through the "Fetch" method, which manually pulls from the IMAP server according to a scheduled period, and then delivers your messages via a push notification. This is costly to the user as this process drains the battery and doesn't keep the user in loop (no immediate notification when you get a mail).
+              </br></br>
+              With the impending release of iOS 9, Apple makes several improvements to the Mail app, and now I'm fully sold on the fact that Apple's Mail app is far superior to Google's iOS Gmail counterpart. Seriously, sorting everything is so much easier.
+              </br></br>
+              So how can you get push notifications for iOS devices? After scouring online for solutions to this, I came up with 3 different solutions (and a potential fourth), detailed below.</div>
+            <div class = "subtitle">iCloud + Gmail Forwarding (My Current Solution)</div>
+              <div class = "internship_details">I'm going to start out with my current solution, as it works best for me. Since iCloud supports Push Notifications, we forward our email to iCloud (instant process), and set up "reply-as" with Gmail, thereby giving it the illusion that you are only using your Gmail account.
+              </br></br>
+              <b>Pros</b>
+              </div>
+              <ul class="coursework">
+                <li>Cleanest and fastest way to enable push notifications.</li>
+              </ul>
+              <div class = "internship_details"><b>Cons</b></div>
+              <ul class="coursework">
+                <li>All email is stored in iCloud.</li>
+                <li>Putting email in trash/making unread does not propogate change to Gmail.</li>
+                <li>Requires time to teach iOS 9 to make Gmail as default reply-as.</li>
+              </ul>
+              <div class = "internship_details">Now that we got that out of the way, lets start setting up our accounts to do this!</div>
+              <ul class="coursework">
+                <li>Go to <a href="http://gmail.com">Gmail.com</a> > Settings > Forwarding and POP/IMAP</li>
+                <li>In the forwarding section, add your iCloud account, set forwarding to your iCloud email, and archive Gmail's copy. </li>
+                <li>On your iOS device go to Settings > Mail, Contacts, Calendars > Add Account and add your Gmail account.</li>
+                <li>Go to Mail, Contacts, Calendars > "Fetch New Data". Set Gmail to Manual, and iCloud to Push.</li>
+              </ul>
+              <div class = "internship_details">All right! You should be getting email notifications instantly. When you get an email and reply, click the "Cc/Bcc, From:" field and set it to your Gmail. Do this a couple times and iOS 9 will learn this by default.</div>
+            <div class = "subtitle">Google Apps for Business</div>
+              <div class = "internship_details">This is another method, which enables Microsoft ActiveSync (allows Push Notifications without forwarding). The problem to this is that you have to buy a subscription and use a new email address, which I do not recommend. 
+              </br></br>
+              <b>Pros</b>
+              </div>
+              <ul class="coursework">
+                <li>Allows Push Notifications without extra set up.</li>
+              </ul>
+              <div class = "internship_details"><b>Cons</b></div>
+              <ul class="coursework">
+                <li>Requires $50 per year subscription.</li>
+                <li>Forces you to use a new email address (you get your own domain though!)</li>
+              </ul>
+              <div class = "internship_details">If the cons are fine by you, head on over to <a href ="https://www.google.com/work/apps/business/">Google Apps for Business</a> and set up an account. As long as you follow the instructions there you should be ready to go!</div>
+            <div class = "subtitle">Gmail iOS App</div>
+              <div class = "internship_details">This goes against my basic motive for this post, but if you're not OCD like me, and you're fine with having two apps (shudder), then head on over to the App Store!
+              </br></br>
+              <b>Pros</b>
+              </div>
+              <ul class="coursework">
+                <li>Super easy, 2 steps and you're done.</li>
+                <li>Full power of Gmail on your phone.</li>
+              </ul>
+              <div class = "internship_details"><b>Cons</b></div>
+              <ul class="coursework">
+                <li>Forces you to have two apps on the phone that do the same thing.</li>
+                <li>Mail app is more intuitive if you read a lot of email.</li>
+              </ul>
+            <div class = "subtitle">Future Solution: Gmail API</div>
+              <div class = "internship_details">Google released an <a href = "https://developers.google.com/gmail/api/guides/push">API for Push Notifications</a>. Since  there's no solution to this issue, why not make one? A messy solution would be to have a server using this API to get a notification for a push notification from the Google server, and then set up that same server to push to the iOS mail client, getting mail instantly without needing a subscription, forwarding, or a separate app. This is just a theory, I need to read more into this API (if I ever get time this summer).</div>
+            <div class = "subtitle">Conclusion</div>
+              <div class = "internship_details">Now that you have all of these options for Gmail push notifications, pick your favorite! Although your choice of method may not be the best, one thing is clear: <b>Google please bring back push notifications to iOS!</b>
+              </br></br>
+              Email me at sonyt [at] berkeley.edu for suggestions and comments!</div>
+          </div>
+        </div>
+        <div class="footer"><div class="contact"><p><a href = "http://sonytheakanath.com">Return to Home Page</a></p></div></div>
+      </div>
+    </div>
+  </body>
+</html>
