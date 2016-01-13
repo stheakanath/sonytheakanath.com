@@ -4,8 +4,8 @@ Just my personal website! Copying of this website is not allowed, however lookin
 
 ## Blog Posts Included
 
-### Image Manipulation Projects
+<b> Image Manipulation Projects </b> - A list of all of my image manipulation projects done over the latter half of 2015.
 
-A list of all of my image manipulation projects done over the latter half of 2015.
+<b> Push Notifications Gmail </b> - Enabling push notifications on Gmail natively on iOS.
 
-<b> Push Notifications Gmail </b> - Enabling push notifications on Gmail natively 
+<b> Apple Internship Reflection </b> - Self explanatory. 
