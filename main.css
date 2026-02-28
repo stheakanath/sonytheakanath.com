@@ -6,61 +6,10 @@
 }
 
 body {
-  /* font-family: "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif; */
   font-family: 'Karla', sans-serif;
   font-size: 18px;
   background-color: #FFF;
-  
 }
-
-/* YC Website */
-.text {
-  font-family: Consolas, "Liberation Mono", Courier, monospace;
-  font-size: 0.8em;
-  padding-top: 1%;
-  padding-left: 1%;
-  text-align: left;
-}
-
-/* CV Styling */
-.experience .exp_title {
-  font-size: 20px;
-  font-weight: 700;
-  padding-top: 10px;
-  width: 70%;
-}
-
-.experience .exp_skills {
-  font-size: 15px;
-  font-weight: 700;
-  width: 70%;
-}
-
-.experience .exp_subtitle {
-  font-size: 17px;
-  display: inline-block;
-}
-
-.experience .exp_date {
-  font-family: Consolas, "Liberation Mono", Courier, monospace;
-  font-size: 12px;
-  margin-top: -5px;
-}
-
-.experience .exp_details {
-  font-size: 15px;
-  line-height: 1.3em;
-  width: 70%
-}
-
-.separator {
-  margin-top:10px; 
-  margin-bottom:10px;
-  border-bottom: 1px solid lightgrey; 
-  width: 70%;
-}
-
-
 
 /* Hyperlinks */
 
@@ -114,35 +63,6 @@ div.highlight pre, div.highlight code {
   line-height: 19px;
 }
 
-/* MathJax */
-
-code.mathjax .MathJax_Display {
-  text-align: left !important;
-}
-
-/* Course Notes Design 2.0 */
-
-.site .home .title {
-  font-family: 'Karla', sans-serif;
-  font-weight: 700;
-
-  font-size: 24px;
-}
-
-.site .home .subtitle {
-  font-family: 'Karla', sans-serif;
-  font-weight: 400;
-
-  font-size: 18px;
-}
-
-.site .home .paragraph {
-  font-family: 'Karla', sans-serif;
-  font-weight: 700;
-
-  font-size: 22px;
-}
-
 .header {
     list-style-type: none;
     margin: 0;
@@ -152,7 +72,7 @@ code.mathjax .MathJax_Display {
 
 .headerLink {
     float: right;
-    padding-left: 30px; 
+    padding-left: 30px;
 }
 
 .headerTitle {
@@ -166,8 +86,6 @@ code.mathjax .MathJax_Display {
     border-bottom: 0.5px solid lightgrey;
     margin-bottom: 25px;
 }
-
-
 
 .active {
     color: black;
@@ -183,20 +101,6 @@ code.mathjax .MathJax_Display {
   line-height: 1.5em;
 }
 
-.site .header svg {
-  width: 3em;
-  height: 3em;
-  margin-bottom: 1em;
-}
-
-.site .header a {
-  fill: #000;
-}
-
-.site .header a:hover {
-  fill: #a00;
-}
-
 .site .meta {
   color: #aaa;
 }
@@ -208,8 +112,6 @@ code.mathjax .MathJax_Display {
   margin-top: 2em;
   overflow: hidden;
 }
-
-
 
 .site .footer .contact {
   float: left;
@@ -224,16 +126,8 @@ code.mathjax .MathJax_Display {
 /* Home */
 
 .home {
-  font-family: 'Karla', sans-serif, font-weight: 700;
-font-size: 17px;
-}
-
-.home .intro .good {
-  color: #801515;
-}
-
-.home .intro .bad {
-  color: #801515;
+  font-family: 'Karla', sans-serif;
+  font-size: 17px;
 }
 
 .home .intro {
@@ -244,28 +138,8 @@ font-size: 17px;
   font-size: 18px;
 }
 
-.home .intro .start {
-  font-family: 'Karla', sans-serif;
-  font-weight: 700;
-
-  font-size: 22px;
-}
-
 .home .intro p {
   margin: 0.5em 0;
-}
-
-.home ul.list {
-  font-family: 'Karla', sans-serif;
-  font-size: 0.92em;
-  list-style-type: square;
-}
-
-.home ul.list li {
-  line-height: 1.0em;
-  margin-bottom: 0.75em;
-  margin-left: 1.5em;
-  margin-top: 0.8em;
 }
 
 .date {
@@ -273,7 +147,6 @@ font-size: 17px;
   font-size: 0.8em;
   color: grey;
 }
-
 
 .home hr {
   display: block;
@@ -287,7 +160,7 @@ font-size: 17px;
   font-family: 'Karla', sans-serif;
   padding-top: 1.5em;
   list-style-type: none;
-font-size: 17px;
+  font-size: 17px;
 }
 
 .home ul.posts li {
@@ -298,15 +171,6 @@ font-size: 17px;
 .home ul.posts span.date {
   font-family: Consolas, "Liberation Mono", Courier, monospace;
   font-size: 0.8em;
-}
-
-.home .review {
-  font-family: 'Karla', sans-serif;
-  font-size: 0.92em;
-  line-height: 1.3em;
-  margin-bottom: 0.75em;
-  margin-left: 1.5em;
-  margin-top: 0.8em;
 }
 
 @media only screen and (max-width: 38em) {
@@ -321,6 +185,33 @@ font-size: 17px;
     }
 }
 
+/* Bullet list */
+
+.home ul.bullets {
+  font-family: 'Karla', sans-serif;
+  font-size: 18px;
+  list-style-type: disc;
+  padding-left: 1.2em;
+  line-height: 1.5em;
+}
+
+.home ul.bullets li {
+  margin-bottom: 0.75em;
+}
+
+.home ul.bullets.past {
+  color: #999;
+}
+
+.home ul.bullets.past a {
+  color: #aaa;
+}
+
+.home hr.past-divider {
+  margin-top: 1em;
+  margin-bottom: 1em;
+}
+
 /* Posts */
 
 h1.title, .post h1, h2, h3 {
@@ -328,7 +219,6 @@ h1.title, .post h1, h2, h3 {
   font-weight: normal;
   margin: 0.5em 0;
   line-height: 1.2em;
-
 }
 
 .post p {
