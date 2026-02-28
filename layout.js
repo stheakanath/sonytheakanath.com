@@ -18,7 +18,8 @@
     '<div class="contact"><p>Sony Theakanath</p></div>' +
     '<div class="contact"><p>' +
     '<a href="mailto:stheakanath@gmail.com">Email</a> ' +
-    '<a href="https://linkedin.com/in/stheakanath/" target="_blank">LinkedIn</a>' +
+    '<a href="https://linkedin.com/in/stheakanath/" target="_blank">LinkedIn</a> ' +
+    '<a href="https://scholar.google.com/citations?user=ocplM1oAAAAJ&hl=en" target="_blank">Google Scholar</a>' +
     '</p></div>' +
     '</div>';
 
