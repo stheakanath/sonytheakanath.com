@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <link href='https://fonts.googleapis.com/css?family=Karla:400,700' rel='stylesheet' type='text/css'>
+    <title>Sony Theakanath - Merging Constitutional AI and Hive Mind to Drive Down Alignment from Months to Days</title>
+    <meta name="viewport" content="width=device-width">
+    <link rel="stylesheet" href="../main.css">
+    <script>window.activePage = "writing"; window.isEssay = true;</script>
+    <script src="../layout.js"></script>
+    <style>
+      .code-block {
+        background-color: #f4f4f4;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        padding: 1em 1.25em;
+        margin: 1.5em 0;
+        font-family: Consolas, "Liberation Mono", Courier, monospace;
+        font-size: 13px;
+        line-height: 1.6em;
+        white-space: pre;
+        overflow-x: auto;
+        color: #333;
+      }
+      .code-block .comment {
+        color: #888;
+      }
+      .code-block .key {
+        color: #c7254e;
+      }
+      .code-block .value {
+        color: #2a6496;
+      }
+      .tension-block {
+        background-color: #fff8f8;
+        border-left: 3px solid #c0392b;
+        padding: 0.85em 1.25em;
+        margin: 1.5em 0;
+        font-family: Consolas, "Liberation Mono", Courier, monospace;
+        font-size: 13px;
+        line-height: 1.6em;
+        white-space: pre;
+        overflow-x: auto;
+        color: #333;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="site">
+        <div class="home">
+          <div id="layout-header"></div>
+          <span class="title">Merging Constitutional AI and Hive Mind to Drive Down Alignment from Months to Days</span>
+          <div class="subtitle">
+            <span class="date">February 2026</span>
+          </div>
+          </br>
+          Cross-org alignment at large companies takes too long. At Meta, I watched two teams spend months negotiating the rollout of a single AI model. These weren't small teams. Each org had thousands of people, its own leadership structure, its own roadmap, and its own goals it was being held to. In practice, they operated more like two separate companies that happened to share a parent. Getting alignment between them wasn't a matter of walking to the desk next to you. It was a negotiation between entities operating at massive scale, each with its own incentives, each accountable to different parts of the business.
+          </br></br>
+          One team was responsible for growing engagement. The other was responsible for reducing harm. Both were full of capable people doing their jobs well. The same question came up in meeting after meeting. The same context got re-established every time. Launches sat blocked for weeks while both sides tried to figure out whether they were even disagreeing about the same thing. They escalated. They ran more experiments to get more data. They escalated again.
+          </br></br>
+          The problem was that neither team had a complete picture of what the other actually cared about. The engagement team didn't know that a significant portion of their core metric was driven by content the harm-reduction team was actively trying to suppress. The harm-reduction team didn't know that their enforcement launches were directly undermining the engagement team's numbers. That information existed. It just lived in people's heads, surfacing slowly over time in meetings, often only when something had already gone wrong.
+          </br></br>
+          The idea behind Hive Mind is to make that context explicit before anyone enters a room. Each org writes down its operating principles in a structured format. The system ingests all of it, along with every meeting transcript, goal doc, and launch review between the two orgs, and produces a brief that surfaces the tensions, the unresolved questions, and the decisions that need to be made. The meeting starts at the actual decision, not at the beginning of the context.
+          </br></br>
+          <strong>Constitutions</strong>
+          </br></br>
+          The most important part of the system is the Constitution. Not a mission statement. Not a set of values. A precise, machine-readable document that captures what the org is actually optimizing for. The field that matters most is <strong>core principles</strong>: the fundamental beliefs that drive how the team makes decisions. These are the things that rarely get said out loud but govern everything. When you write them down, the conflicts between orgs become visible immediately.
+          </br></br>
+          The examples below are illustrative. The structure reflects how we built this; the values and metrics are placeholders.
+
+          <div class="code-block"><span class="comment">// example: team-growth.json</span>
+{
+  <span class="key">"org"</span>: <span class="value">"Team Growth"</span>,
+  <span class="key">"core_principles"</span>: [
+    <span class="value">"Our job is to build the best app for [demographic] — that means
+     a product they love and one that is good for them"</span>,
+    <span class="value">"Engagement is a signal of product quality, not an end in itself"</span>,
+    <span class="value">"Ranking autonomy is essential to moving fast on product quality"</span>
+  ],
+  <span class="key">"goals"</span>: [
+    <span class="value">"Grow [primary engagement metric] X% QoQ"</span>,
+    <span class="value">"Increase [target demographic] DAU Y% by end of H1"</span>
+  ],
+  <span class="key">"constraints"</span>: [
+    <span class="value">"No single launch regresses sessions more than Z%"</span>,
+    <span class="value">"Ranking changes require data science sign-off on holdout results"</span>
+  ],
+  <span class="key">"acceptable_tradeoffs"</span>: [
+    <span class="value">"Will accept engagement regression if safety gain ratio exceeds A:1"</span>,
+    <span class="value">"[Demographic] metric regressions weighted Bx in tradeoff calculations"</span>
+  ],
+  <span class="key">"non_negotiables"</span>: [
+    <span class="value">"No launches that increase [demographic] exposure to [harm category]"</span>
+  ]
+}</div>
+
+          <div class="code-block"><span class="comment">// example: team-safety.json</span>
+{
+  <span class="key">"org"</span>: <span class="value">"Team Safety"</span>,
+  <span class="key">"core_principles"</span>: [
+    <span class="value">"Our job is to make the platform safe for [demographic] — a great
+     product that causes harm is not a great product"</span>,
+    <span class="value">"Prevalence reduction is the primary measure of whether we are
+     doing our job"</span>,
+    <span class="value">"Enforcement precision must be maintained or the system loses
+     credibility with the people it is meant to protect"</span>
+  ],
+  <span class="key">"goals"</span>: [
+    <span class="value">"Reduce harmful content prevalence X% by end of H1"</span>,
+    <span class="value">"Maintain enforcement precision above Y%"</span>
+  ],
+  <span class="key">"constraints"</span>: [
+    <span class="value">"No launches that regress classifier precision below Z%"</span>,
+    <span class="value">"All enforcement changes require policy review"</span>
+  ],
+  <span class="key">"acceptable_tradeoffs"</span>: [
+    <span class="value">"Will accept precision regression if prevalence gain exceeds A:1"</span>,
+    <span class="value">"[Demographic] metric regressions weighted Cx in tradeoff calculations"</span>
+  ],
+  <span class="key">"non_negotiables"</span>: [
+    <span class="value">"No launches that increase [demographic] exposure to [harm category]
+     under any tradeoff ratio"</span>
+  ]
+}</div>
+
+          Read the core principles of both orgs back to back and the conflict is already visible. Both teams want to build a great product for the same demographic. They are not adversaries. But one team measures "great" primarily through engagement signals, and the other measures it through harm reduction. Under the same measurement system, those definitions produce directly competing launch decisions. Neither team had ever written this down for the other.
+          </br></br>
+          Also visible: Team Growth and Team Safety weight the same demographic metric differently. A launch that Team Growth calculates as acceptable will often fail Team Safety's bar. This asymmetry had never been explicitly negotiated. It was just how each team had been operating, invisible until both documents were read side by side.
+          </br></br>
+          <strong>Hive Mind</strong>
+          </br></br>
+          The constitutions are the foundation. Hive Mind is what makes them useful at scale. The tool ingests every document between two orgs: the constitutions, meeting transcripts, goal docs, launch reviews, escalation threads. Everything goes into a watched folder. When new files appear, the system re-runs analysis automatically.
+          </br></br>
+          A critical property of the system is that it operates independently of both parties. Neither team sees the other's constitution or documents directly. Hive Mind reads both sides separately, builds a picture of what each org actually cares about, and surfaces the tensions between them before anyone sits down together. This matters because people in alignment meetings are not neutral. They come in with positions. They are selective about what context they share and when. A system that sits outside both orgs and reads everything they have produced, without an agenda, finds things that neither side would have volunteered.
+          </br></br>
+          The key design decision was to use raw transcripts rather than summaries. Summaries lose the specific phrasing that reveals assumptions. The sentence "the tradeoff guidance doesn't apply to growth-primary launches" means something very different from "the tradeoff guidance applies to all launches." Both might get summarized as "teams discussed tradeoff framework scope." The original language is what the analysis needs.
+          </br></br>
+          Given the two constitutions above and a set of meeting transcripts, here is the kind of output Hive Mind produces:
+
+          <div class="tension-block"><span class="comment">// example: alignment-brief-output.json (excerpt)</span>
+{
+  <span class="key">"alignment_score"</span>: <span class="value">42</span>,
+  <span class="key">"tensions"</span>: [
+    {
+      <span class="key">"severity"</span>: <span class="value">"critical"</span>,
+      <span class="key">"title"</span>: <span class="value">"Growth metric rewards the content Safety is suppressing"</span>,
+      <span class="key">"detail"</span>: <span class="value">"A significant portion of [primary engagement metric] comes from
+               content that violates safety policies. Every ranking
+               improvement Team Growth ships amplifies the content Team
+               Safety is trying to reduce. Neither team's H1 goal can be
+               fully achieved under the current metric definition."</span>,
+      <span class="key">"evidence"</span>: <span class="value">"[meeting transcript], team-growth.json"</span>
+    },
+    {
+      <span class="key">"severity"</span>: <span class="value">"high"</span>,
+      <span class="key">"title"</span>: <span class="value">"[Demographic] metric multipliers are misaligned"</span>,
+      <span class="key">"detail"</span>: <span class="value">"Team Growth weights [demographic] regressions at Bx.
+               Team Safety weights them at Cx. A launch Team Growth
+               approves will often fail Team Safety's bar. This
+               asymmetry has never been explicitly negotiated.
+               NOTE: Team Safety rejected a launch last month citing
+               this weighting — constitution updated to reflect
+               observed behavior."</span>,
+      <span class="key">"evidence"</span>: <span class="value">"team-growth.json, team-safety.json, [meeting transcript]"</span>
+    },
+    {
+      <span class="key">"severity"</span>: <span class="value">"high"</span>,
+      <span class="key">"title"</span>: <span class="value">"Tradeoff framework scope is disputed"</span>,
+      <span class="key">"detail"</span>: <span class="value">"Team Growth believes the tradeoff bar applies only to
+               safety-primary launches. Team Safety believes it applies
+               to all launches. Multiple pending launches are blocked
+               on this question."</span>,
+      <span class="key">"evidence"</span>: <span class="value">"[meeting transcript 1], [meeting transcript 2]"</span>
+    }
+  ],
+  <span class="key">"questions_requiring_decisions"</span>: [
+    <span class="value">"Does the tradeoff framework apply to growth-primary launches?"</span>,
+    <span class="value">"Should [demographic] multipliers be aligned across both orgs?"</span>,
+    <span class="value">"Who is DRI for launches in the gray-zone tradeoff range?"</span>
+  ]
+}</div>
+
+          This brief goes out before the meeting. Everyone reads the same document. The meeting opens with the first question on that list. The first question, which had been open for months, got answered in twenty minutes. No one spent time re-establishing context. No one relitigated what had been said in previous meetings. The critical tension was in the text from day one. It just needed something to read all the documents at once.
+          </br></br>
+          Before Hive Mind: months. After: two days to a decision-ready meeting.
+          </br></br>
+          <strong>Living Constitutions</strong>
+          </br></br>
+          One of the more important design decisions is that constitutions are not filled out once and left alone. The system updates them continuously as decisions get made. When a team accepts or rejects a tradeoff in a meeting, when a launch gets blocked or approved, when an escalation resolves a gray-zone case, Hive Mind reads those outcomes and refines the constitution to reflect what the team actually did, not just what they said they believed. The tension output above shows this in practice: Team Safety's rejection of a launch last month was read as a signal, and the constitution was updated accordingly. Over time, the constitution becomes a living record of the org's real decision-making behavior, not an aspirational document that drifts from reality.
+          </br></br>
+          <strong>What comes next</strong>
+          </br></br>
+          We're at V1. The current version handles the core workflow: ingest, analyze, produce a brief. What we're building toward is continuous monitoring, where the system watches for new documents and surfaces emerging tensions before they become months-long negotiations.
+          </br></br>
+          Further out, the goal is for the system to go beyond surfacing conflicts and start pushing changes directly, driving teams toward alignment without requiring a human in the loop for every decision. The constitutions tell the system what each org believes. The meeting history tells it how each org actually behaves. At some point, those two things are enough to act on.
+          <div class="footer"><div class="contact"><p><a href="javascript:history.back()">Return to Home Page</a></p></div></div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
