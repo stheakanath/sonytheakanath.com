@@ -232,11 +232,20 @@
 
     /* ── Mobile ─────────────────────────────────────────────────────────── */
     @media (max-width: 700px) {
-      .page-wrapper { height: auto; overflow: auto; }
-      html, body { overflow: auto; }
-      .main-layout { flex-direction: column; height: auto; }
-      .restaurant-list { width: 100%; height: 50vh; border-right: none; border-bottom: 0.5px solid lightgrey; }
-      #map { height: 50vh; }
+      html, body { height: 100%; overflow: hidden; }
+      .page-wrapper { height: 100%; display: flex; flex-direction: column; overflow: hidden; }
+      .site-header { padding: 14px 5%; flex-shrink: 0; }
+      .site-header a { font-size: 18px; }
+      .page-intro { padding: 16px 5% 14px; flex-shrink: 0; }
+      .page-intro h1 { font-size: 20px; }
+      .page-intro p { font-size: 13px; }
+      .main-layout { flex-direction: column; flex: 1; overflow: hidden; min-height: 0; }
+      .restaurant-list { width: 100%; height: 55%; min-width: unset; border-right: none; border-bottom: 0.5px solid lightgrey; overflow-y: auto; flex-shrink: 0; }
+      #map { flex: 1; height: 45%; min-height: 200px; }
+      .restaurant-card { padding: 14px 16px; gap: 12px; }
+      .card-image { width: 60px; height: 60px; }
+      .card-name { font-size: 14px; }
+      .card-note { font-size: 12px; }
     }
   </style>
 </head>
@@ -585,6 +594,9 @@ allRestaurants.forEach((r, i) => {
   marker.on('click', () => selectRestaurant(i));
   markers.push(marker);
 });
+
+// ── Invalidate map size after layout settles (fixes mobile blank map) ────────
+window.addEventListener('load', () => { setTimeout(() => map.invalidateSize(), 100); });
 
 // ── Select / highlight ─────────────────────────────────────────────────────
 let activeIndex = null;
