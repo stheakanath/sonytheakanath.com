@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sony Theakanath — San Francisco</title>
+  <link href='https://fonts.googleapis.com/css?family=Karla:400,700' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html, body {
+      font-family: 'Karla', sans-serif;
+      font-size: 17px;
+      background: #fff;
+      color: #111;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    /* ── Top nav (matches site header) ─────────────────────────────────── */
+    .site-header {
+      border-bottom: 0.5px solid lightgrey;
+      padding: 18px 5%;
+      max-width: 100%;
+    }
+    .site-header a {
+      font-family: 'Karla', sans-serif;
+      font-weight: 700;
+      font-size: 22px;
+      color: #A52A2A;
+      text-decoration: none;
+    }
+    .site-header a:hover { color: #000; }
+
+    /* ── Page title area ────────────────────────────────────────────────── */
+    .page-intro {
+      padding: 28px 5% 20px;
+      border-bottom: 0.5px solid lightgrey;
+    }
+    .page-intro h1 {
+      font-family: 'Karla', sans-serif;
+      font-size: 26px;
+      font-weight: 700;
+      color: #111;
+      margin-bottom: 6px;
+    }
+    .page-intro p {
+      font-size: 15px;
+      color: #666;
+      line-height: 1.5;
+    }
+
+    /* ── Main layout: list left, map right ──────────────────────────────── */
+    .main-layout {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+      min-height: 0;
+    }
+
+    /* Wrapper to make body a flex column so main-layout fills remaining space */
+    .page-wrapper {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* ── Left: restaurant list ──────────────────────────────────────────── */
+    .restaurant-list {
+      width: 420px;
+      min-width: 320px;
+      overflow-y: auto;
+      border-right: 0.5px solid lightgrey;
+      flex-shrink: 0;
+    }
+
+    /* ── Section divider ────────────────────────────────────────────────── */
+    .section-divider {
+      padding: 10px 20px 8px;
+      font-family: Consolas, "Liberation Mono", Courier, monospace;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #999;
+      background: #fafafa;
+      border-bottom: 0.5px solid #f0f0f0;
+      border-top: 0.5px solid #f0f0f0;
+    }
+
+    .restaurant-card {
+      display: flex;
+      gap: 14px;
+      padding: 18px 20px;
+      border-bottom: 0.5px solid #f0f0f0;
+      cursor: pointer;
+      transition: background 0.12s;
+      align-items: flex-start;
+    }
+    .restaurant-card:hover,
+    .restaurant-card.active {
+      background: #fafafa;
+    }
+    .restaurant-card.active {
+      border-left: 3px solid #A52A2A;
+      padding-left: 17px;
+    }
+
+    .card-number {
+      font-family: Consolas, "Liberation Mono", Courier, monospace;
+      font-size: 11px;
+      color: #bbb;
+      min-width: 20px;
+      padding-top: 3px;
+    }
+
+    .card-image {
+      width: 72px;
+      height: 72px;
+      border-radius: 6px;
+      object-fit: cover;
+      flex-shrink: 0;
+      background: #f5f5f5;
+    }
+
+    .card-body {
+      flex: 1;
+      min-width: 0;
+    }
+    .card-name {
+      font-weight: 700;
+      font-size: 15px;
+      color: #111;
+      margin-bottom: 2px;
+      line-height: 1.3;
+    }
+    .card-neighborhood {
+      font-family: Consolas, "Liberation Mono", Courier, monospace;
+      font-size: 11px;
+      color: #999;
+      margin-bottom: 5px;
+    }
+    .card-note {
+      font-size: 13px;
+      color: #555;
+      line-height: 1.45;
+      margin-bottom: 5px;
+    }
+    .card-must-get {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin-top: 4px;
+    }
+    .must-get-tag {
+      font-size: 11px;
+      background: #f5f0f0;
+      color: #A52A2A;
+      border-radius: 3px;
+      padding: 2px 7px;
+      font-family: 'Karla', sans-serif;
+    }
+
+    /* ── Right: map ─────────────────────────────────────────────────────── */
+    #map {
+      flex: 1;
+      height: 100%;
+    }
+
+    /* ── Leaflet popup styling ──────────────────────────────────────────── */
+    .leaflet-popup-content-wrapper {
+      border-radius: 6px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.12);
+      font-family: 'Karla', sans-serif;
+    }
+    .leaflet-popup-content {
+      margin: 12px 14px;
+      font-size: 13px;
+      line-height: 1.45;
+    }
+    .popup-name {
+      font-weight: 700;
+      font-size: 14px;
+      margin-bottom: 3px;
+    }
+    .popup-note {
+      color: #555;
+      margin-bottom: 6px;
+    }
+    .popup-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 3px;
+    }
+    .popup-tag {
+      font-size: 11px;
+      background: #f5f0f0;
+      color: #A52A2A;
+      border-radius: 3px;
+      padding: 2px 6px;
+    }
+
+    /* ── Custom map marker ──────────────────────────────────────────────── */
+    .map-marker {
+      background: #A52A2A;
+      color: white;
+      border-radius: 50%;
+      width: 26px;
+      height: 26px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: Consolas, monospace;
+      font-size: 10px;
+      font-weight: bold;
+      border: 2px solid white;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+      cursor: pointer;
+    }
+    .map-marker.active {
+      background: #111;
+      transform: scale(1.2);
+    }
+
+    /* ── Scrollbar styling ──────────────────────────────────────────────── */
+    .restaurant-list::-webkit-scrollbar { width: 4px; }
+    .restaurant-list::-webkit-scrollbar-track { background: transparent; }
+    .restaurant-list::-webkit-scrollbar-thumb { background: #ddd; border-radius: 2px; }
+
+    /* ── Mobile ─────────────────────────────────────────────────────────── */
+    @media (max-width: 700px) {
+      .page-wrapper { height: auto; overflow: auto; }
+      html, body { overflow: auto; }
+      .main-layout { flex-direction: column; height: auto; }
+      .restaurant-list { width: 100%; height: 50vh; border-right: none; border-bottom: 0.5px solid lightgrey; }
+      #map { height: 50vh; }
+    }
+  </style>
+</head>
+<body>
+<div class="page-wrapper">
+<div class="site-header" style="display:flex;align-items:center;gap:20px;">
+  <a href="../index.html">Sony Theakanath</a>
+  <div style="display:flex;gap:0;border:0.5px solid lightgrey;border-radius:4px;overflow:hidden;">
+    <a href="nyc.html" style="font-family:'Karla',sans-serif;font-size:12px;font-weight:700;padding:4px 14px;text-decoration:none;color:#999;background:#fff;border-right:0.5px solid lightgrey;">New York</a>
+    <a href="sf.html" style="font-family:'Karla',sans-serif;font-size:12px;font-weight:700;padding:4px 14px;text-decoration:none;color:#fff;background:#A52A2A;">San Francisco</a>
+  </div>
+</div>
+
+<div class="page-intro">
+  <h1>San Francisco</h1>
+  <p>Every place I'd take you. 25 restaurants across the city and the Bay Area.</p>
+</div>
+
+<div class="main-layout">
+  <div class="restaurant-list" id="restaurant-list"></div>
+  <div id="map"></div>
+</div>
+</div><!-- end page-wrapper -->
+
+<script>
+const sfCity = [
+  {
+    id: "cotogna",
+    name: "Cotogna",
+    neighborhood: "Jackson Square",
+    note: "Michael Tusk's rustic Italian — the handmade pasta changes with the season and every single one is worth ordering. Come hungry and let the kitchen decide.",
+    mustGet: ["Seasonal Pasta", "Wood-Fired Whole Chicken"],
+    image: "img/sf/cotogna.jpg",
+    lat: 37.7975, lon: -122.4034
+  },
+  {
+    id: "golden-boy",
+    name: "Golden Boy Pizza",
+    neighborhood: "North Beach",
+    note: "A North Beach institution since 1978 — thick Sicilian-style slices sold by the piece, cash only, eaten standing up. The clam and garlic is the one.",
+    mustGet: ["Clam & Garlic Pizza", "Cheese Pizza"],
+    image: "img/sf/golden_boy.jpg",
+    lat: 37.7992, lon: -122.4074
+  },
+  {
+    id: "china-live",
+    name: "China Live",
+    neighborhood: "Chinatown",
+    note: "George Chen's modern Chinese marketplace — the dan dan noodles and har gow are standouts, and the space itself is worth the visit.",
+    mustGet: ["Dan Dan Noodles", "Har Gow"],
+    image: "img/sf/china_live.jpg",
+    lat: 37.7966, lon: -122.4060
+  },
+  {
+    id: "el-farolito",
+    name: "El Farolito",
+    neighborhood: "Mission",
+    note: "The Mission's best late-night taqueria — the quesadilla suiza is the move, not the burrito. Get it with everything and eat it at the counter.",
+    mustGet: ["Quesadilla Suiza", "Carne Asada Taco"],
+    image: "img/sf/el_farolito.jpg",
+    lat: 37.7514, lon: -122.4184
+  },
+  {
+    id: "swensens",
+    name: "Swensen's Ice Cream",
+    neighborhood: "Russian Hill",
+    note: "The original Swensen's, open since 1948 on Hyde Street — sticky Chewy Louie sundaes and scoops that taste exactly like they should.",
+    mustGet: ["Sticky Chewy Chocolate", "Swiss Orange Chip"],
+    image: "img/sf/swensens.jpg",
+    lat: 37.7940, lon: -122.4188
+  },
+  {
+    id: "seven-hills",
+    name: "Seven Hills",
+    neighborhood: "Russian Hill",
+    note: "A neighborhood Italian that punches above its weight — the pasta is made in-house and the truffle tagliolini is one of the best plates in the city.",
+    mustGet: ["Truffle Tagliolini", "Seasonal Risotto"],
+    image: "img/sf/seven_hills.jpg",
+    lat: 37.7944, lon: -122.4198
+  },
+  {
+    id: "bobs-donuts",
+    name: "Bob's Donut & Pastry Shop",
+    neighborhood: "Nob Hill",
+    note: "A 24-hour Polk Street institution since 1960 — the crumb donut alone is worth the trip, and the giant donut challenge draws a crowd at 2am.",
+    mustGet: ["Crumb Donut", "Apple Fritter"],
+    image: "img/sf/bobs_donuts.jpg",
+    lat: 37.7930, lon: -122.4214
+  },
+  {
+    id: "deli-board",
+    name: "Deli Board",
+    neighborhood: "SoMa",
+    note: "Adam Mesnick's legendary SoMa sandwich counter — the 49er piles corned beef, pastrami, and brisket on a Dutch crunch roll with coleslaw and Board sauce.",
+    mustGet: ["The 49er", "Gold-N-Berg-N-Stein"],
+    image: "img/sf/deli_board.jpg",
+    lat: 37.7785, lon: -122.4007
+  },
+  {
+    id: "marufuku",
+    name: "Marufuku Ramen",
+    neighborhood: "Japantown",
+    note: "The chicken paitan broth here is rich and clean in a way that tonkotsu rarely is — a 20-hour process that shows. Expect a wait and it's worth it.",
+    mustGet: ["Chicken Paitan Ramen", "Hakata Tonkotsu Ramen"],
+    image: "img/sf/marufuku.jpg",
+    lat: 37.7849, lon: -122.4294
+  },
+  {
+    id: "brendas",
+    name: "Brenda's Meat & Three",
+    neighborhood: "Tenderloin",
+    note: "New Orleans soul food in the Tenderloin — the fried chicken is the best in the city, and the biscuits are legitimately great. Go for brunch.",
+    mustGet: ["Fried Chicken", "Biscuits with Gravy"],
+    image: "img/sf/brendas.jpg",
+    lat: 37.7826, lon: -122.4175
+  },
+  {
+    id: "rich-table",
+    name: "Rich Table",
+    neighborhood: "Hayes Valley",
+    note: "Evan and Sarah Rich's Hayes Valley restaurant is the kind of place you bring four people so you can order everything — the sardine chips and porcini doughnuts are unlike anything else.",
+    mustGet: ["Sardine Chips", "Porcini Doughnuts"],
+    image: "img/sf/rich_table.jpg",
+    lat: 37.7763, lon: -122.4225
+  },
+  {
+    id: "tartine",
+    name: "Tartine Manufactory",
+    neighborhood: "Mission",
+    note: "Chad Robertson's expanded bakery and restaurant in the Mission — the country loaf is the benchmark for sourdough in this city, and the morning buns sell out fast.",
+    mustGet: ["Country Loaf", "Morning Bun"],
+    image: "img/sf/tartine.jpg",
+    lat: 37.7618, lon: -122.4148
+  },
+  {
+    id: "arsicault",
+    name: "Arsicault Bakery",
+    neighborhood: "Inner Richmond",
+    note: "The almond croissant here is the best in the city — dark, caramelized, and filled with frangipane that doesn't taste like it came from a tube. Get there early.",
+    mustGet: ["Almond Croissant", "Butter Croissant"],
+    image: "img/sf/arsicault.jpg",
+    lat: 37.7826, lon: -122.4641
+  },
+  {
+    id: "san-tung",
+    name: "San Tung",
+    neighborhood: "Inner Sunset",
+    note: "The dry-fried chicken wings are the reason to come — sticky, sweet, and slightly spicy with a texture that's hard to explain until you've had them. The cold noodles are also excellent.",
+    mustGet: ["Dry Fried Chicken Wings", "Cold Noodles"],
+    image: "img/sf/san_tung.jpg",
+    lat: 37.7637, lon: -122.4685
+  },
+  {
+    id: "tilak",
+    name: "Tilak",
+    neighborhood: "Inner Richmond",
+    note: "A small Indian spot in the Richmond that does butter chicken better than most places in the city — rich, not too sweet, and the naan is fresh.",
+    mustGet: ["Butter Chicken", "Garlic Naan"],
+    image: "img/sf/tilak.jpg",
+    lat: 37.7830, lon: -122.4593
+  }
+];
+
+const bayArea = [
+  {
+    id: "zareens",
+    name: "Zareen's",
+    neighborhood: "Palo Alto",
+    note: "Pakistani-Indian cooking that the whole Stanford crowd swears by — the lamb gosht thali is the move, and the chapli kebab burger is a genuinely great idea.",
+    mustGet: ["Lamb Gosht Thali", "Beef Chapli Kebab Thali"],
+    image: "img/sf/zareens.jpg",
+    lat: 37.4275, lon: -122.1428
+  },
+  {
+    id: "innout",
+    name: "In-N-Out Burger",
+    neighborhood: "Bay Area (multiple locations)",
+    note: "The Double-Double Animal Style is one of the best fast food items in existence — grilled onions, extra spread, and two patties for under $6.",
+    mustGet: ["Double-Double Animal Style", "Animal Style Fries"],
+    image: "img/sf/innout.jpg",
+    lat: 37.3688, lon: -121.9200
+  },
+  {
+    id: "falafel-stop",
+    name: "Falafel STOP",
+    neighborhood: "Sunnyvale",
+    note: "Freshly baked pita, crispy falafel made to order, and a Jerusalem Mix plate that's become a South Bay tech lunch staple for good reason.",
+    mustGet: ["Falafel Pita", "Jerusalem Mix Plate"],
+    image: "img/sf/falafel_stop.jpg",
+    lat: 37.3454, lon: -122.0493
+  },
+  {
+    id: "ten-ren",
+    name: "Ten Ren Tea",
+    neighborhood: "San Jose",
+    note: "One of the original Bay Area boba shops — they use high-quality jasmine tea as the base, which makes the milk tea here taste noticeably different from everywhere else.",
+    mustGet: ["Roasted Oolong Milk Tea", "Jasmine Green Tea Boba"],
+    image: "img/sf/ten_ren.jpg",
+    lat: 37.3337, lon: -121.8907
+  },
+  {
+    id: "bjs",
+    name: "BJ's Restaurant & Brewhouse",
+    neighborhood: "San Jose",
+    note: "The Pizookie — a warm, underbaked cookie served in a skillet with a scoop of vanilla ice cream — is the only reason you need to come here, and it's worth it.",
+    mustGet: ["Pizookie", "Deep Dish Pizza"],
+    image: "img/sf/bjs.jpg",
+    lat: 37.3387, lon: -121.8853
+  },
+  {
+    id: "donut-wheel",
+    name: "Donut Wheel",
+    neighborhood: "Cupertino",
+    note: "A Cupertino institution with an absurd variety — bear claws, cronuts, glazed, old fashioned — and the kind of quality that makes it worth a detour.",
+    mustGet: ["Bear Claw", "Original Glazed"],
+    image: "img/sf/donut_wheel.jpg",
+    lat: 37.3230, lon: -122.0322
+  },
+  {
+    id: "lei-garden",
+    name: "Lei Garden",
+    neighborhood: "Cupertino",
+    note: "The South Bay's best dim sum — the har gow and siu mai are excellent, and the beef chow fun is worth ordering even if you're already full.",
+    mustGet: ["Har Gow", "Beef Chow Fun"],
+    image: "img/sf/lei_garden.jpg",
+    lat: 37.3220, lon: -122.0500
+  },
+  {
+    id: "dish-n-dash",
+    name: "Dish N Dash",
+    neighborhood: "Sunnyvale",
+    note: "The best Middle Eastern in the South Bay — everything is made fresh, the chicken shawarma wrap is perfectly spiced, and the hummus is genuinely good.",
+    mustGet: ["Chicken Shawarma Wrap", "Hummus"],
+    image: "img/sf/dish_n_dash.jpg",
+    lat: 37.3688, lon: -122.0363
+  },
+  {
+    id: "eriks",
+    name: "Erik's DeliCafe",
+    neighborhood: "Campbell",
+    note: "A Northern California deli institution since 1973 — the Reuben on rye is the sandwich to get, with Erik's Secret Goo making it something you'll think about later.",
+    mustGet: ["Reuben on Rye", "New England Clam Chowder"],
+    image: "img/sf/eriks.jpg",
+    lat: 37.2872, lon: -121.9435
+  },
+  {
+    id: "yiassoo",
+    name: "Yiassoo",
+    neighborhood: "Campbell",
+    note: "A proper Greek spot in Campbell where the lamb souvlaki plate is the real deal — charred, juicy, and served with rice, pita, and a Greek salad that doesn't disappoint.",
+    mustGet: ["Lamb Souvlaki Plate", "Gyros Sandwich"],
+    image: "img/sf/yiassoo.jpg",
+    lat: 37.2872, lon: -121.9500
+  },
+  {
+    id: "la-victoria",
+    name: "La Victoria Taqueria",
+    neighborhood: "San Jose",
+    note: "The late-night San Jose taqueria that SJSU students have been hitting for decades — get the quesadilla, not the burrito, and don't skip the orange sauce.",
+    mustGet: ["Quesadilla", "Orange Sauce"],
+    image: "img/sf/la_victoria.jpg",
+    lat: 37.3318, lon: -121.8863
+  }
+];
+
+// ── Build restaurant list ──────────────────────────────────────────────────
+const listEl = document.getElementById('restaurant-list');
+const allRestaurants = [];
+
+function buildSection(restaurants, sectionLabel, startIndex) {
+  const divider = document.createElement('div');
+  divider.className = 'section-divider';
+  divider.textContent = sectionLabel;
+  listEl.appendChild(divider);
+
+  restaurants.forEach((r, i) => {
+    const globalIndex = startIndex + i;
+    allRestaurants.push(r);
+
+    const card = document.createElement('div');
+    card.className = 'restaurant-card';
+    card.id = `card-${r.id}`;
+    card.dataset.index = globalIndex;
+
+    const tagsHTML = r.mustGet.map(t => `<span class="must-get-tag">${t}</span>`).join('');
+
+    card.innerHTML = `
+      <div class="card-number">${String(globalIndex + 1).padStart(2, '0')}</div>
+      <img class="card-image" src="${r.image}" alt="${r.name}" onerror="this.style.display='none'">
+      <div class="card-body">
+        <div class="card-name">${r.name}</div>
+        <div class="card-neighborhood">${r.neighborhood}</div>
+        <div class="card-note">${r.note}</div>
+        <div class="card-must-get">${tagsHTML}</div>
+      </div>
+    `;
+
+    card.addEventListener('click', () => selectRestaurant(globalIndex));
+    listEl.appendChild(card);
+  });
+}
+
+buildSection(sfCity, 'San Francisco', 0);
+buildSection(bayArea, 'Bay Area', sfCity.length);
+
+// ── Init map ───────────────────────────────────────────────────────────────
+const map = L.map('map', {
+  center: [37.62, -122.25],
+  zoom: 10,
+  zoomControl: true
+});
+
+L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+  subdomains: 'abcd',
+  maxZoom: 20
+}).addTo(map);
+
+// ── Add markers ────────────────────────────────────────────────────────────
+const markers = [];
+
+allRestaurants.forEach((r, i) => {
+  if (!r.lat || !r.lon) return;
+
+  const markerEl = document.createElement('div');
+  markerEl.className = 'map-marker';
+  markerEl.textContent = i + 1;
+
+  const icon = L.divIcon({
+    html: markerEl.outerHTML,
+    className: '',
+    iconSize: [26, 26],
+    iconAnchor: [13, 13]
+  });
+
+  const tagsHTML = r.mustGet.map(t => `<span class="popup-tag">${t}</span>`).join('');
+
+  const marker = L.marker([r.lat, r.lon], { icon })
+    .addTo(map)
+    .bindPopup(`
+      <div class="popup-name">${r.name}</div>
+      <div class="popup-note">${r.note}</div>
+      <div class="popup-tags">${tagsHTML}</div>
+    `, { maxWidth: 240 });
+
+  marker.on('click', () => selectRestaurant(i));
+  markers.push(marker);
+});
+
+// ── Select / highlight ─────────────────────────────────────────────────────
+let activeIndex = null;
+
+function selectRestaurant(i) {
+  if (activeIndex !== null) {
+    document.getElementById(`card-${allRestaurants[activeIndex].id}`)?.classList.remove('active');
+  }
+
+  activeIndex = i;
+  const r = allRestaurants[i];
+
+  const card = document.getElementById(`card-${r.id}`);
+  if (card) {
+    card.classList.add('active');
+    card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  if (r.lat && r.lon) {
+    map.setView([r.lat, r.lon], 15, { animate: true });
+    if (markers[i]) markers[i].openPopup();
+  }
+}
+</script>
+</body>
+</html>

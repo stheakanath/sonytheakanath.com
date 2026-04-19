@@ -21,6 +21,7 @@
     '<a href="https://linkedin.com/in/stheakanath/" target="_blank">LinkedIn</a> ' +
     '<a href="https://scholar.google.com/citations?user=ocplM1oAAAAJ&hl=en" target="_blank">Google Scholar</a>' +
     '</p></div>' +
+    '<div class="contact"><p style="font-size:11px;"><a href="' + root + 'eats/nyc.html" style="color:#ddd;text-decoration:none;">eats</a></p></div>' +
     '</div>';
 
   document.addEventListener('DOMContentLoaded', function () {
