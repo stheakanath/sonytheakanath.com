@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dither + Halftone + Motion</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: #ffffff;
+      overflow-x: hidden;
+    }
+
+    /* Tall scroll space to drive the animation */
+    #scroll-driver {
+      height: 500vh;
+    }
+
+    /* Fixed canvas — fills the viewport */
+    #halftone-canvas {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw;
+      height: 100vh;
+      display: block;
+    }
+
+    #scroll-hint {
+      position: fixed;
+      bottom: 28px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-family: 'Courier New', monospace;
+      font-size: 10px;
+      letter-spacing: 0.25em;
+      color: #aaa;
+      text-transform: uppercase;
+      transition: opacity 0.6s;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+
+<div id="scroll-driver"></div>
+<canvas id="halftone-canvas"></canvas>
+<div id="scroll-hint">scroll</div>
+
+<!-- Hidden image loader -->
+<img id="source-img" src="flower.jpg" crossorigin="anonymous" style="display:none" />
+
+<script>
+const canvas = document.getElementById('halftone-canvas');
+const ctx    = canvas.getContext('2d');
+const hint   = document.getElementById('scroll-hint');
+const img    = document.getElementById('source-img');
+
+// Offscreen canvas for pixel sampling
+const offscreen = document.createElement('canvas');
+const offCtx    = offscreen.getContext('2d', { willReadFrequently: true });
+
+// Lavender tint color (matches reference)
+const TINT_R = 180, TINT_G = 170, TINT_B = 230;
+
+let ready = false;
+
+// ─── Halftone renderer ────────────────────────────────────────────────────────
+// dotSpacing: pixels between dot centres
+// zoom: scale factor for the source image crop (1 = full image, >1 = zoomed in)
+// progress: 0-1 scroll progress
+function renderHalftone(progress) {
+  const W = canvas.width;
+  const H = canvas.height;
+
+  // Zoom from 1.0 (full flower) to 2.2 (zoomed into centre) as user scrolls
+  const zoom = 1.0 + progress * 1.2;
+
+  // Dot spacing shrinks slightly as we zoom in (more detail)
+  const dotSpacing = Math.max(4, 10 - progress * 4);
+
+  // Sample the source image into offscreen at current zoom
+  const srcW = offscreen.width  / zoom;
+  const srcH = offscreen.height / zoom;
+  const srcX = (offscreen.width  - srcW) / 2;
+  const srcY = (offscreen.height - srcH) / 2;
+
+  offCtx.clearRect(0, 0, offscreen.width, offscreen.height);
+  offCtx.drawImage(img, srcX, srcY, srcW, srcH, 0, 0, offscreen.width, offscreen.height);
+
+  const imgData = offCtx.getImageData(0, 0, offscreen.width, offscreen.height);
+  const data    = imgData.data;
+
+  // White background
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(0, 0, W, H);
+
+  // Draw halftone dots
+  const cols = Math.ceil(W / dotSpacing) + 2;
+  const rows = Math.ceil(H / dotSpacing) + 2;
+
+  // Scale from offscreen to canvas
+  const scaleX = offscreen.width  / W;
+  const scaleY = offscreen.height / H;
+
+  for (let row = 0; row < rows; row++) {
+    for (let col = 0; col < cols; col++) {
+      const cx = col * dotSpacing;
+      const cy = row * dotSpacing;
+
+      // Sample pixel from offscreen
+      const px = Math.min(offscreen.width  - 1, Math.floor(cx * scaleX));
+      const py = Math.min(offscreen.height - 1, Math.floor(cy * scaleY));
+      const idx = (py * offscreen.width + px) * 4;
+
+      const r = data[idx];
+      const g = data[idx + 1];
+      const b = data[idx + 2];
+
+      // Perceived luminance
+      const lum = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+
+      // Invert: bright areas = small dots, dark areas = large dots
+      // This gives the halftone newspaper look
+      const dotRadius = (1 - lum) * dotSpacing * 0.62;
+
+      if (dotRadius < 0.3) continue;
+
+      // Lavender tint — blend between white and the tint color based on dot density
+      const alpha = Math.min(1, (1 - lum) * 1.4);
+      ctx.fillStyle = `rgba(${TINT_R},${TINT_G},${TINT_B},${alpha})`;
+
+      ctx.beginPath();
+      ctx.arc(cx, cy, dotRadius, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+}
+
+// ─── Resize handler ───────────────────────────────────────────────────────────
+function resize() {
+  canvas.width  = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  // Offscreen matches canvas but at lower res for performance
+  offscreen.width  = Math.min(canvas.width,  800);
+  offscreen.height = Math.min(canvas.height, 600);
+
+  if (ready) renderHalftone(getProgress());
+}
+
+function getProgress() {
+  const scrollMax = document.documentElement.scrollHeight - window.innerHeight;
+  return scrollMax > 0 ? Math.min(1, window.scrollY / scrollMax) : 0;
+}
+
+// ─── Scroll handler ───────────────────────────────────────────────────────────
+let rafPending = false;
+function onScroll() {
+  if (rafPending) return;
+  rafPending = true;
+  requestAnimationFrame(() => {
+    rafPending = false;
+    const p = getProgress();
+    renderHalftone(p);
+    hint.style.opacity = p > 0.03 ? '0' : '1';
+  });
+}
+
+window.addEventListener('scroll', onScroll, { passive: true });
+window.addEventListener('resize', resize);
+
+// ─── Init ─────────────────────────────────────────────────────────────────────
+function init() {
+  ready = true;
+  resize();
+  renderHalftone(0);
+}
+
+if (img.complete && img.naturalWidth > 0) {
+  init();
+} else {
+  img.addEventListener('load', init);
+  img.addEventListener('error', () => {
+    document.body.innerHTML = '<p style="color:#999;font-family:monospace;padding:40px">Image failed to load.</p>';
+  });
+}
+</script>
+</body>
+</html>

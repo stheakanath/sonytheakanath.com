@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sony Theakanath — New York</title>
+  <link href='https://fonts.googleapis.com/css?family=Karla:400,700' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html, body {
+      font-family: 'Karla', sans-serif;
+      font-size: 17px;
+      background: #fff;
+      color: #111;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    /* ── Top nav (matches site header) ─────────────────────────────────── */
+    .site-header {
+      border-bottom: 0.5px solid lightgrey;
+      padding: 18px 5%;
+      max-width: 100%;
+    }
+    .site-header a {
+      font-family: 'Karla', sans-serif;
+      font-weight: 700;
+      font-size: 22px;
+      color: #A52A2A;
+      text-decoration: none;
+    }
+    .site-header a:hover { color: #000; }
+
+    /* ── Page title area ────────────────────────────────────────────────── */
+    .page-intro {
+      padding: 28px 5% 20px;
+      border-bottom: 0.5px solid lightgrey;
+    }
+    .page-intro h1 {
+      font-family: 'Karla', sans-serif;
+      font-size: 26px;
+      font-weight: 700;
+      color: #111;
+      margin-bottom: 6px;
+    }
+    .page-intro p {
+      font-size: 15px;
+      color: #666;
+      line-height: 1.5;
+    }
+
+    /* ── Main layout: list left, map right ──────────────────────────────── */
+    .main-layout {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+      min-height: 0;
+    }
+
+    /* Wrapper to make body a flex column so main-layout fills remaining space */
+    .page-wrapper {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* ── Left: restaurant list ──────────────────────────────────────────── */
+    .restaurant-list {
+      width: 420px;
+      min-width: 320px;
+      overflow-y: auto;
+      border-right: 0.5px solid lightgrey;
+      flex-shrink: 0;
+    }
+
+    .restaurant-card {
+      display: flex;
+      gap: 14px;
+      padding: 18px 20px;
+      border-bottom: 0.5px solid #f0f0f0;
+      cursor: pointer;
+      transition: background 0.12s;
+      align-items: flex-start;
+    }
+    .restaurant-card:hover,
+    .restaurant-card.active {
+      background: #fafafa;
+    }
+    .restaurant-card.active {
+      border-left: 3px solid #A52A2A;
+      padding-left: 17px;
+    }
+
+    .card-number {
+      font-family: Consolas, "Liberation Mono", Courier, monospace;
+      font-size: 11px;
+      color: #bbb;
+      min-width: 20px;
+      padding-top: 3px;
+    }
+
+    .card-image {
+      width: 72px;
+      height: 72px;
+      border-radius: 6px;
+      object-fit: cover;
+      flex-shrink: 0;
+      background: #f5f5f5;
+    }
+    .card-image-placeholder {
+      width: 72px;
+      height: 72px;
+      border-radius: 6px;
+      background: #f5f5f5;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+    }
+
+    .card-body {
+      flex: 1;
+      min-width: 0;
+    }
+    .card-name {
+      font-weight: 700;
+      font-size: 15px;
+      color: #111;
+      margin-bottom: 2px;
+      line-height: 1.3;
+    }
+    .card-neighborhood {
+      font-family: Consolas, "Liberation Mono", Courier, monospace;
+      font-size: 11px;
+      color: #999;
+      margin-bottom: 5px;
+    }
+    .card-note {
+      font-size: 13px;
+      color: #555;
+      line-height: 1.45;
+      margin-bottom: 5px;
+    }
+    .card-must-get {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin-top: 4px;
+    }
+    .must-get-tag {
+      font-size: 11px;
+      background: #f5f0f0;
+      color: #A52A2A;
+      border-radius: 3px;
+      padding: 2px 7px;
+      font-family: 'Karla', sans-serif;
+    }
+
+    /* ── Right: map ─────────────────────────────────────────────────────── */
+    #map {
+      flex: 1;
+      height: 100%;
+    }
+
+    /* ── Leaflet popup styling ──────────────────────────────────────────── */
+    .leaflet-popup-content-wrapper {
+      border-radius: 6px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.12);
+      font-family: 'Karla', sans-serif;
+    }
+    .leaflet-popup-content {
+      margin: 12px 14px;
+      font-size: 13px;
+      line-height: 1.45;
+    }
+    .popup-name {
+      font-weight: 700;
+      font-size: 14px;
+      margin-bottom: 3px;
+    }
+    .popup-note {
+      color: #555;
+      margin-bottom: 6px;
+    }
+    .popup-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 3px;
+    }
+    .popup-tag {
+      font-size: 11px;
+      background: #f5f0f0;
+      color: #A52A2A;
+      border-radius: 3px;
+      padding: 2px 6px;
+    }
+
+    /* ── Custom map marker ──────────────────────────────────────────────── */
+    .map-marker {
+      background: #A52A2A;
+      color: white;
+      border-radius: 50%;
+      width: 26px;
+      height: 26px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: Consolas, monospace;
+      font-size: 10px;
+      font-weight: bold;
+      border: 2px solid white;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+      cursor: pointer;
+    }
+    .map-marker.active {
+      background: #111;
+      transform: scale(1.2);
+    }
+
+    /* ── Footer ─────────────────────────────────────────────────────────── */
+    /* (hidden on this page since it's full-height) */
+
+    /* ── Scrollbar styling ──────────────────────────────────────────────── */
+    .restaurant-list::-webkit-scrollbar { width: 4px; }
+    .restaurant-list::-webkit-scrollbar-track { background: transparent; }
+    .restaurant-list::-webkit-scrollbar-thumb { background: #ddd; border-radius: 2px; }
+
+    /* ── Mobile ─────────────────────────────────────────────────────────── */
+    @media (max-width: 700px) {
+      .page-wrapper { height: auto; overflow: auto; }
+      html, body { overflow: auto; }
+      .main-layout { flex-direction: column; height: auto; }
+      .restaurant-list { width: 100%; height: 50vh; border-right: none; border-bottom: 0.5px solid lightgrey; }
+      #map { height: 50vh; }
+    }
+  </style>
+</head>
+<body>
+<div class="page-wrapper">
+<div class="site-header" style="display:flex;align-items:center;gap:20px;">
+  <a href="../index.html">Sony Theakanath</a>
+  <div style="display:flex;gap:0;border:0.5px solid lightgrey;border-radius:4px;overflow:hidden;">
+    <a href="nyc.html" style="font-family:'Karla',sans-serif;font-size:12px;font-weight:700;padding:4px 14px;text-decoration:none;color:#fff;background:#A52A2A;border-right:0.5px solid lightgrey;">New York</a>
+    <a href="sf.html" style="font-family:'Karla',sans-serif;font-size:12px;font-weight:700;padding:4px 14px;text-decoration:none;color:#999;background:#fff;">San Francisco</a>
+  </div>
+</div>
+
+<div class="page-intro">
+  <h1>New York</h1>
+  <p>Every place I'd take you. 23 restaurants, no filler.</p>
+</div>
+
+<div class="main-layout">
+  <div class="restaurant-list" id="restaurant-list"></div>
+  <div id="map"></div>
+</div>
+</div><!-- end page-wrapper -->
+
+<script>
+const restaurants = [
+  {
+    id: "golden-diner",
+    name: "Golden Diner",
+    neighborhood: "Lower East Side",
+    note: "Golden Diner reimagines classic New York diner fare through an Asian-American lens — the honey butter pancakes are as good as advertised.",
+    mustGet: ["Honey Butter Pancakes", "Chicken Katsu Club"],
+    image: "https://files.manuscdn.com/user_upload_by_module/session_file/310519663336361034/kjNCTxtoqsPdvfGj.jpg",
+    lat: 40.7124474, lon: -73.9942216
+  },
+  {
+    id: "north-dumpling",
+    name: "North Dumpling",
+    neighborhood: "Chinatown",
+    note: "Extra-gingery pork and chive dumplings made by hand, cash only, some of the cheapest good food in the city.",
+    mustGet: ["Pork and Chive Fried Dumplings", "Sesame Pancake with Chives"],
+    image: "https://files.manuscdn.com/user_upload_by_module/session_file/310519663336361034/qnJMyUbVJCRvYFrD.jpg",
+    lat: 40.7140168, lon: -73.9964455
+  },
+  {
+    id: "west-rice-roll-king",
+    name: "West Rice Roll King",
+    neighborhood: "Chinatown",
+    note: "Thin, chewy rice rolls made fresh to order — better than most of what you'd find in Hong Kong.",
+    mustGet: ["Shrimp Rice Roll", "BBQ Pork Rice Roll"],
+    image: "https://files.manuscdn.com/user_upload_by_module/session_file/310519663336361034/OCanDzSMABiAVYNi.jpg",
+    lat: 40.7169867, lon: -73.9948131
+  },
+  {
+    id: "double-chicken-please",
+    name: "Double Chicken Please",
+    neighborhood: "Lower East Side",
+    note: "A bar that takes fried chicken as seriously as its cocktails — the custard bun alone is worth the trip.",
+    mustGet: ["Key Lime Mango Sticky Rice Custard Bun", "Fried Chicken Sandwich"],
+    image: "https://files.manuscdn.com/user_upload_by_module/session_file/310519663336361034/aMtNRDcHtSajlpsv.jpg",
+    lat: 40.7195842, lon: -73.9904912
+  },
+  {
+    id: "thai-diner",
+    name: "Thai Diner",
+    neighborhood: "NoLita",
+    note: "Thai comfort food filtered through a New York diner lens — the Thai Tea Babka French Toast is the most creative thing on any menu in the city.",
+    mustGet: ["Thai Tea Babka French Toast", "Thai Disco Fries", "Thai Diner Egg Sandwich"],
+    image: "https://files.manuscdn.com/user_upload_by_module/session_file/310519663336361034/LcBwzxXYTdKXAwHL.jpg",
+    lat: 40.7207443, lon: -73.9957016
+  },
+  {
+    id: "piccola-cucina",
+    name: "Piccola Cucina Osteria Siciliana",
+    neighborhood: "SoHo",
+    note: "They make the tiramisu tableside, and the fresh pastas are as good as anything you'd find in Palermo.",
+    mustGet: ["Tiramisu", "Paccheri alla Nerano", "Fusilloni con Scampi"],
+    image: "https://files.manuscdn.com/user_upload_by_module/session_file/310519663336361034/lfFsIzjtHpeJVtho.jpg",
+    lat: 40.7253, lon: -74.0020
+  },
+  {
+    id: "sushi-ouji",
+    name: "Sushi Ouji",
+    neighborhood: "West Village",
+    note: "One of the best omakases for the price in the city — intimate, soulful, and the kuruma ebi is exceptional.",
+    mustGet: ["Omakase", "Kuruma Ebi", "Bafun Uni"],
+    image: "https://files.manuscdn.com/user_upload_by_module/session_file/310519663336361034/wEVAVKtGoPZpUxRA.jpg",
+    lat: 40.7340, lon: -74.0060
+  },
+  {
+    id: "hamburger-america",
+    name: "Hamburger America",
+    neighborhood: "West Village",
+    note: "George Motz's fried onion burger is a piece of American food history — flat-top smashed, sweet onion, perfectly simple.",
+    mustGet: ["Fried Onion Burger", "Classic Smash Burger", "Green Chile Cheeseburger"],
+    image: "https://files.manuscdn.com/user_upload_by_module/session_file/310519663336361034/KaLjEBsFKMkyBtBz.jpg",
+    lat: 40.7279642, lon: -74.0024583
+  },
+  {
+    id: "emily",
+    name: "Emily West Village",
+    neighborhood: "West Village",
+    note: "Best pizza in New York — get the Emmy Burger too, which sounds wrong until you eat it.",
+    mustGet: ["Emmy Burger", "Colony Pizza", "Emily Pizza"],
+    image: "https://www.ooni.com/cdn/shop/articles/Hot_Honey_Pizza_with_Prosciutto_and_Ricotta_-_Vindulge.jpg",
+    lat: 40.7350, lon: -74.0040
+  },
+  {
+    id: "birria-landia",
+    name: "Birria Landia NYC",
+    neighborhood: "Jackson Heights",
+    note: "Better birria tacos than San Diego — the consomé alone is worth the trip to Jackson Heights.",
+    mustGet: ["Birria Tacos", "Mulitas", "Consomé"],
+    image: "https://files.manuscdn.com/user_upload_by_module/session_file/310519663336361034/RUCPlaCOgUlTzGGd.jpeg",
+    lat: 40.7472312, lon: -73.8885518
+  },
+  {
+    id: "fish-cheeks",
+    name: "Fish Cheeks",
+    neighborhood: "NoHo",
+    note: "Vibrant contemporary Thai seafood on Bond Street — anything on the menu is good, but the coconut crab curry is the one.",
+    mustGet: ["Coconut Crab Curry", "Zaab Wings", "Crab Fried Rice"],
+    image: "https://files.manuscdn.com/user_upload_by_module/session_file/310519663336361034/ejDIQTisAFCSQsBo.jpeg",
+    lat: 40.7270, lon: -73.9940
+  },
+  {
+    id: "raku",
+    name: "Raku",
+    neighborhood: "West Village",
+    note: "Voluminous bowls of chewy, silky udon in Ishizuka's signature dashi — the gyunan udon is the move.",
+    mustGet: ["Gyunan Udon", "Niku Udon", "Chicken Tatsuta-age"],
+    image: "https://p16-lemon8-va-sign.tiktokcdn-us.com/tos-maliva-v-ac5634-us/ow8VyDrpTJA5PhIkDefNBCQIxZiAKTEBtAzH1v~tplv-tej9nj120t-share_card_us_view.jpeg?lk3s=66c60501&source=share_card&x-expires=1779192000&x-signature=8ex4qgxlPGtN0sj7cLk250Tq0U8%3D",
+    lat: 40.7360, lon: -74.0050
+  },
+  {
+    id: "shinn-east",
+    name: "Shinn East",
+    neighborhood: "East Village",
+    note: "Intimate, affordable omakase where the chef crafts each piece in front of you — the otoro and uni are the highlights.",
+    mustGet: ["Omakase", "Otoro", "Wagyu Miyazaki"],
+    image: "https://files.manuscdn.com/user_upload_by_module/session_file/310519663336361034/xCemtRxvRurKOxkN.jpg",
+    lat: 40.7260, lon: -73.9820
+  },
+  {
+    id: "singlish",
+    name: "Singlish",
+    neighborhood: "East Village",
+    note: "A Singapore-inspired cocktail bar where the clarified mango sticky rice cocktail is the best drink in the city.",
+    mustGet: ["Hawker Highball", "Singlish Fries with Salted Egg Aioli"],
+    image: "https://www.thespruceeats.com/thmb/g_q4z_3f_6_0_0_0/1500x1000/filters:no_upscale():max_bytes(150000):strip_icc()/mango-sticky-rice-cocktail-7975267-hero-01-20766324204c44248464302927233772.jpg",
+    lat: 40.7349796, lon: -73.993027
+  },
+  {
+    id: "caffe-pana",
+    name: "Caffe Pana",
+    neighborhood: "West Village",
+    note: "Italian-inspired gelato with inventive flavors and exceptional quality — any scoop is the right order.",
+    mustGet: ["Seasonal Gelato", "Affogato"],
+    image: "https://files.manuscdn.com/user_upload_by_module/session_file/310519663336361034/kJtcRNaVaeqEIGtO.jpg",
+    lat: 40.7330, lon: -74.0030
+  },
+  {
+    id: "midos",
+    name: "Mido's Halal Cart",
+    neighborhood: "Midtown",
+    note: "The best halal cart in New York — better than Halal Guys, topped with dill, olives, and pickled peppers. Ask for Mohammed.",
+    mustGet: ["Chicken Over Rice", "Lamb Over Rice", "Combo Over Rice"],
+    image: "https://files.manuscdn.com/user_upload_by_module/session_file/310519663336361034/xfUCLJjhfJPhPVDa.jpg",
+    lat: 40.7551309, lon: -73.9923795
+  },
+  {
+    id: "apollo-bagels",
+    name: "Apollo Bagels",
+    neighborhood: "West Village",
+    note: "Naturally fermented, boiled sourdough bagels with a craggy, chewy interior — the best bagels in New York City.",
+    mustGet: ["Everything Bagel", "Sesame Bagel", "Plain Bagel"],
+    image: "https://files.manuscdn.com/user_upload_by_module/session_file/310519663336361034/mvVlALuhkopFQrRD.jpg",
+    lat: 40.7366233, lon: -74.0013191
+  },
+  {
+    id: "bangkok-supper-club",
+    name: "Bangkok Supper Club",
+    neighborhood: "NoHo",
+    note: "The Fish Cheeks founders' elevated follow-up — the uni and crab tartlet and the Chilean sea bass curry are the two things to get.",
+    mustGet: ["Uni & Crab Tartlet", "Chilean Sea Bass Chakram Curry", "Pork Jowl"],
+    image: "https://files.manuscdn.com/user_upload_by_module/session_file/310519663336361034/BmZWKLDcAqLWmixq.jpeg",
+    lat: 40.7280, lon: -73.9930
+  },
+  {
+    id: "xing-fu-tang",
+    name: "Xing Fu Tang",
+    neighborhood: "Multiple locations",
+    note: "Authentic Taiwanese brown sugar boba — they pound the tapioca fresh in front of you, and it shows.",
+    mustGet: ["Brown Sugar Boba Milk", "Gold Foil Brown Sugar Boba Milk"],
+    image: "https://files.manuscdn.com/user_upload_by_module/session_file/310519663336361034/eAhrxdCkfomstakJ.png",
+    lat: 40.7472671, lon: -73.9851526
+  },
+  {
+    id: "culture-espresso",
+    name: "Culture Espresso",
+    neighborhood: "Midtown",
+    note: "The chocolate chip cookies here are chewy, buttery, and aggressively good — the best fresh cookies in the city.",
+    mustGet: ["Chocolate Chip Cookie", "Oatmeal Cranberry Cookie"],
+    image: "https://files.manuscdn.com/user_upload_by_module/session_file/310519663336361034/FWGeVOAIbyjgoZSS.jpeg",
+    lat: 40.7551309, lon: -73.9923795
+  },
+  {
+    id: "7th-street-burger",
+    name: "7th Street Burger",
+    neighborhood: "East Village",
+    note: "The best smash burgers in New York — simple, no-frills, and the double cheeseburger is perfect.",
+    mustGet: ["Double Cheeseburger", "Cheeseburger", "Loaded Fries"],
+    image: "https://files.manuscdn.com/user_upload_by_module/session_file/310519663336361034/zXelHoPdPSXArrgn.jpg",
+    lat: 40.7260, lon: -73.9840
+  },
+  {
+    id: "bar-goto-niban",
+    name: "Bar Goto Niban",
+    neighborhood: "Williamsburg",
+    note: "A Brooklyn cocktail bar with a Japanese soul — elevated drinks, spicy miso chicken wings, and a room that feels like nowhere else.",
+    mustGet: ["Plum Boulevardier", "Spicy Miso Chicken Wings", "Korokke"],
+    image: "https://files.manuscdn.com/user_upload_by_module/session_file/310519663336361034/XnrIxRXbPQJRshwA.jpg",
+    lat: 40.7152, lon: -73.9572
+  },
+  {
+    id: "shelskys",
+    name: "Shelsky's of Brooklyn",
+    neighborhood: "Brooklyn",
+    note: "Brooklyn's best appetizing shop — the smoked fish sandwiches are the move, and the Peter Shelsky is the one to get.",
+    mustGet: ["Peter Shelsky", "Member of the Tribe", "The Great Gatsby"],
+    image: "https://theflattopking.com/wp-content/uploads/2023/06/chopped-cheese-2-1024x1024.jpg",
+    lat: 40.6893833, lon: -73.9923337
+  }
+];
+
+// ── Build restaurant list ──────────────────────────────────────────────────
+const listEl = document.getElementById('restaurant-list');
+
+restaurants.forEach((r, i) => {
+  const card = document.createElement('div');
+  card.className = 'restaurant-card';
+  card.id = `card-${r.id}`;
+  card.dataset.index = i;
+
+  const tagsHTML = r.mustGet.map(t => `<span class="must-get-tag">${t}</span>`).join('');
+
+  card.innerHTML = `
+    <div class="card-number">${String(i + 1).padStart(2, '0')}</div>
+    <img class="card-image" src="${r.image}" alt="${r.name}" onerror="this.style.display='none'">
+    <div class="card-body">
+      <div class="card-name">${r.name}</div>
+      <div class="card-neighborhood">${r.neighborhood}</div>
+      <div class="card-note">${r.note}</div>
+      <div class="card-must-get">${tagsHTML}</div>
+    </div>
+  `;
+
+  card.addEventListener('click', () => selectRestaurant(i));
+  listEl.appendChild(card);
+});
+
+// ── Init map ───────────────────────────────────────────────────────────────
+const map = L.map('map', {
+  center: [40.730, -73.990],
+  zoom: 13,
+  zoomControl: true
+});
+
+L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+  subdomains: 'abcd',
+  maxZoom: 20
+}).addTo(map);
+
+// ── Add markers ────────────────────────────────────────────────────────────
+const markers = [];
+
+restaurants.forEach((r, i) => {
+  if (!r.lat || !r.lon) return;
+
+  const markerEl = document.createElement('div');
+  markerEl.className = 'map-marker';
+  markerEl.textContent = i + 1;
+
+  const icon = L.divIcon({
+    html: markerEl.outerHTML,
+    className: '',
+    iconSize: [26, 26],
+    iconAnchor: [13, 13]
+  });
+
+  const tagsHTML = r.mustGet.map(t => `<span class="popup-tag">${t}</span>`).join('');
+
+  const marker = L.marker([r.lat, r.lon], { icon })
+    .addTo(map)
+    .bindPopup(`
+      <div class="popup-name">${r.name}</div>
+      <div class="popup-note">${r.note}</div>
+      <div class="popup-tags">${tagsHTML}</div>
+    `, { maxWidth: 240 });
+
+  marker.on('click', () => selectRestaurant(i));
+  markers.push(marker);
+});
+
+// ── Select / highlight ─────────────────────────────────────────────────────
+let activeIndex = null;
+
+function selectRestaurant(i) {
+  // Deactivate previous
+  if (activeIndex !== null) {
+    document.getElementById(`card-${restaurants[activeIndex].id}`)?.classList.remove('active');
+  }
+
+  activeIndex = i;
+  const r = restaurants[i];
+
+  // Activate card
+  const card = document.getElementById(`card-${r.id}`);
+  if (card) {
+    card.classList.add('active');
+    card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  // Pan map and open popup
+  if (r.lat && r.lon) {
+    map.setView([r.lat, r.lon], 15, { animate: true });
+    if (markers[i]) markers[i].openPopup();
+  }
+}
+</script>
+
+</body>
+</html>
